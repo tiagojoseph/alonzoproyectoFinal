@@ -5,6 +5,8 @@ from django.views.generic.list import ListView
 from django.views.generic.edit import CreateView
 from django.views.generic.detail import DetailView
 from django.urls import reverse_lazy
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 def inicio (request):
     return render (request, "inicio/index.html")
@@ -61,12 +63,14 @@ class ListadoCasas(ListView):
     template_name= "inicio/listado_casas.html"  
     context_object_name = "casas" 
 
-
+@login_required
 def eliminar_casa (request, id_casa):
     casa = Casa.objects.get(id=id_casa)
     casa.delete()
     return redirect ("inicio:listado_casas")
 
+
+@login_required
 def editar_casa(request, id_casa):
 
     casa = Casa.objects.get(id=id_casa)
@@ -87,6 +91,6 @@ def editar_casa(request, id_casa):
     return render (request, "inicio/editar_casa.html", { "form": formulario, "casa" : casa })
 
 
-class VerCasa(DetailView):
+class VerCasa(LoginRequiredMixin, DetailView):
     model = Casa 
     template_name = "inicio/ver_casa.html"
